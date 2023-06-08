@@ -1,10 +1,17 @@
 import * as React from 'react';
 
-export default function Box() {
+interface Props {
+  position: number[];
+  name: string;
+  color: {};
+  wireframe?: boolean;
+}
+
+export default function Box({ position, name, color, wireframe }: Props) {
   return (
-    <mesh>
+    <mesh position={position} name={name}>
       <boxGeometry />
-      <meshBasicMaterial color={0x00ff00} wireframe />
+      <meshBasicMaterial color={color} wireframe={wireframe} />
     </mesh>
   );
 }
