@@ -26,7 +26,16 @@ export default function Box({ position, name, color, wireframe }: Props) {
   });
 
   return (
-    <mesh position={position} name={name} ref={ref}>
+    <mesh
+      position={position}
+      name={name}
+      ref={ref}
+      onPointerDown={(e) => console.log('pointer down', e.eventObject.name)}
+      onPointerUp={(e) => console.log('pointer up', e.eventObject.name)}
+      onPointerOver={(e) => console.log('pointer over', e.eventObject.name)}
+      onPointerOut={(e) => console.log('pointer out', e.eventObject.name)}
+      onUpdate={(e: any) => console.log(e)}
+    >
       <boxGeometry />
       <meshBasicMaterial color={color} wireframe={wireframe} />
     </mesh>
