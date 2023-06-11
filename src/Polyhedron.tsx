@@ -30,6 +30,8 @@ export default function Polyhedron({ position, polyhedron }: Props) {
       geometry={polyhedron[count]}
     >
       <meshBasicMaterial color={'lime'} wireframe />
+      {/* Can add axes helper to each mesh if you want */}
+      {/* <axesHelper /> */}
     </mesh>
   );
 }
