@@ -2,23 +2,148 @@ import { Canvas } from '@react-three/fiber';
 // import Box from './Box';
 import * as React from 'react';
 import * as THREE from 'three';
-import Polyhedron from './Polyhedron';
+// import Polyhedron from './Polyhedron';
 // import { Stats } from '@react-three/drei';
 import { Perf } from 'r3f-perf';
 import { OrbitControls } from '@react-three/drei';
 import { useControls } from 'leva';
-import { useMemo } from 'react';
-import Materials from './Materials';
+import { useMemo, useRef } from 'react';
+// import Materials from './Materials';
+import LightsComp from './Lights';
+
+function Lights() {
+  const ambientRef = useRef();
+  const directionalRef = useRef();
+  const pointRef = useRef();
+  const spotRef = useRef();
+
+  useControls('Ambient Light', {
+    visible: {
+      value: false,
+      onChange: (v) => {
+        // @ts-ignore
+        ambientRef.current.visible = v;
+      },
+    },
+    color: {
+      value: 'white',
+      onChange: (v) => {
+        // @ts-ignore
+        ambientRef.current.color = new THREE.Color(v);
+      },
+    },
+    intensity: {
+      value: 0.5,
+      min: 0,
+      max: 1,
+      step: 0.1,
+      onChange: (v) => {
+        // @ts-ignore
+        ambientRef.current.intensity = v;
+      },
+    },
+  });
+
+  useControls('Directional Light', {
+    visible: {
+      value: true,
+      onChange: (v) => {
+        // @ts-ignore
+        directionalRef.current.visible = v;
+      },
+    },
+    // @ts-ignore
+    position: {
+      x: 1,
+      y: 1,
+      z: 1,
+      onChange: (v) => {
+        // @ts-ignore
+        directionalRef.current.position.copy(v);
+      },
+    },
+    color: {
+      value: 'white',
+      onChange: (v) => {
+        // @ts-ignore
+        directionalRef.current.color = new THREE.Color(v);
+      },
+    },
+  });
+
+  useControls('Point Light', {
+    visible: {
+      value: false,
+      onChange: (v) => {
+        // @ts-ignore
+        pointRef.current.visible = v;
+      },
+    },
+    // @ts-ignore
+    position: {
+      x: 2,
+      y: 0,
+      z: 0,
+      onChange: (v) => {
+        // @ts-ignore
+        pointRef.current.position.copy(v);
+      },
+    },
+    color: {
+      value: 'white',
+      onChange: (v) => {
+        // @ts-ignore
+        pointRef.current.color = new THREE.Color(v);
+      },
+    },
+  });
+
+  useControls('Spot Light', {
+    visible: {
+      value: false,
+      onChange: (v) => {
+        // @ts-ignore
+        spotRef.current.visible = v;
+      },
+    },
+    // @ts-ignore
+    position: {
+      x: 3,
+      y: 2.5,
+      z: 1,
+      onChange: (v) => {
+        // @ts-ignore
+        spotRef.current.position.copy(v);
+      },
+    },
+    color: {
+      value: 'white',
+      onChange: (v) => {
+        // @ts-ignore
+        spotRef.current.color = new THREE.Color(v);
+      },
+    },
+  });
+
+  return (
+    <>
+      <ambientLight ref={ambientRef} />
+      <directionalLight ref={directionalRef} />
+      <pointLight ref={pointRef} />
+      <spotLight ref={spotRef} />
+    </>
+  );
+}
 
 export default function App() {
-  const polyhedron = useMemo(
-    () => [
-      new THREE.BoxGeometry(),
-      new THREE.SphereGeometry(0.785398),
-      new THREE.DodecahedronGeometry(0.785398),
-    ],
-    []
-  );
+  // const polyhedron = useMemo(
+  //   () => [
+  //     new THREE.BoxGeometry(),
+  //     new THREE.SphereGeometry(0.785398),
+  //     new THREE.DodecahedronGeometry(0.785398),
+  //   ],
+  //   []
+  // );
 
   // const options = useMemo(() => {
   //   return {
@@ -35,7 +160,7 @@ export default function App() {
 
   return (
     <Canvas camera={{ position: [0, 0, 4] }}>
-      <directionalLight position={[1, 1, 1]} />
+      {/* <directionalLight position={[1, 1, 1]} /> */}
       {/* <Box
         position={new THREE.Vector3(-0.75, 0, 0)}
         name='A'
@@ -72,7 +197,7 @@ export default function App() {
         position={new THREE.Vector3(0.75, 0.75, 0)}
         polyhedron={polyhedron}
       /> */}
-      <Materials
+      {/* <Materials
         name='meshBasicMaterial'
         position={[-3, 1, 0]}
         material={new THREE.MeshBasicMaterial()}
@@ -91,6 +216,37 @@ export default function App() {
         name='meshStandardMaterial'
         position={[3, 1, 0]}
         material={new THREE.MeshStandardMaterial()}
+      /> */}
+      <Lights />
+      <LightsComp
+        name='meshBasicMaterial'
+        position={[-3, 1, 0]}
+        material={
+          // @ts-ignore
+          new THREE.MeshBasicMaterial({ color: 'yellow', flatShading: true })
+        }
+      />
+      <LightsComp
+        name='meshNormalMaterial'
+        position={[-1, 1, 0]}
+        material={new THREE.MeshNormalMaterial({ flatShading: true })}
+      />
+      <LightsComp
+        name='meshPhongMaterial'
+        position={[1, 1, 0]}
+        material={
+          new THREE.MeshPhongMaterial({ color: 'lime', flatShading: true })
+        }
+      />
+      <LightsComp
+        name='meshStandardMaterial'
+        position={[3, 1, 0]}
+        material={
+          new THREE.MeshStandardMaterial({
+            color: 0xff0033,
+            flatShading: true,
+          })
+        }
       />
       <OrbitControls
       // enableDamping={false}
