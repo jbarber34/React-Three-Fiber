@@ -20,7 +20,14 @@ export default function Lights({ name, position, material }: Props) {
   });
 
   return (
-    <mesh name={name} position={position} material={material} ref={ref}>
+    <mesh
+      name={name}
+      position={position}
+      material={material}
+      ref={ref}
+      castShadow
+      receiveShadow
+    >
       <icosahedronGeometry args={[1, 1]} />
     </mesh>
   );
