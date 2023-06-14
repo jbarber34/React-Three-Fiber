@@ -1,92 +1,24 @@
-import { Canvas } from '@react-three/fiber';
+import { Canvas, useLoader } from '@react-three/fiber';
 // import Box from './Box';
 import * as React from 'react';
 import * as THREE from 'three';
 // import Polyhedron from './Polyhedron';
 // import { Stats } from '@react-three/drei';
 import { Perf } from 'r3f-perf';
-import { OrbitControls } from '@react-three/drei';
+import { Circle, OrbitControls } from '@react-three/drei';
 import { useControls } from 'leva';
 // import { useMemo, useRef } from 'react';
 // import Materials from './Materials';
-import LightsComp from './Lights';
-import Floor from './Floor';
-
-function Lights() {
-  const ambientCtl = useControls('Ambient Light', {
-    visible: false,
-    intensity: {
-      value: 1.0,
-      min: 0,
-      max: 1.0,
-      step: 0.1,
-    },
-  });
-
-  const directionalCtl = useControls('Directional Light', {
-    visible: true,
-    position: {
-      x: 3.3,
-      y: 1.0,
-      z: 4.4,
-    },
-    castShadow: true,
-  });
-
-  const pointCtl = useControls('Point Light', {
-    visible: false,
-    position: {
-      x: 2,
-      y: 0,
-      z: 0,
-    },
-    castShadow: true,
-  });
-
-  const spotCtl = useControls('Spot Light', {
-    visible: false,
-    position: {
-      x: 3,
-      y: 2.5,
-      z: 1,
-    },
-    castShadow: true,
-  });
-
-  return (
-    <>
-      <ambientLight
-        visible={ambientCtl.visible}
-        intensity={ambientCtl.intensity}
-      />
-      <directionalLight
-        visible={directionalCtl.visible}
-        position={[
-          directionalCtl.position.x,
-          directionalCtl.position.y,
-          directionalCtl.position.z,
-        ]}
-        castShadow={directionalCtl.castShadow}
-      />
-      <pointLight
-        visible={pointCtl.visible}
-        position={[
-          pointCtl.position.x,
-          pointCtl.position.y,
-          pointCtl.position.z,
-        ]}
-        castShadow={pointCtl.castShadow}
-      />
-      <spotLight
-        visible={spotCtl.visible}
-        position={[spotCtl.position.x, spotCtl.position.y, spotCtl.position.z]}
-        castShadow={spotCtl.castShadow}
-      />
-    </>
-  );
-}
+// import LightsComp from './Lights';
+// import Floor from './Floor';
+import { GLTFLoader } from 'three/examples/jsm/loaders/GLTFLoader';
 
 export default function App() {
+  // const texture = useLoader(THREE.TextureLoader, './img/grid.png');
+  // Target Field
+  // const gltf = useLoader(GLTFLoader, './models/TargetField3Condensed.glb');
+  const gltf = useLoader(GLTFLoader, './models/monkey.glb');
+
   // const polyhedron = useMemo(
   //   () => [
   //     new THREE.BoxGeometry(),
@@ -169,14 +101,11 @@ export default function App() {
         position={[3, 1, 0]}
         material={new THREE.MeshStandardMaterial()}
       /> */}
-      <Lights />
+      {/* <Lights />
       <LightsComp
         name='meshBasicMaterial'
         position={[-3, 1, 0]}
-        material={
-          // @ts-ignore
-          new THREE.MeshBasicMaterial({ color: 'yellow', flatShading: true })
-        }
+        material={new THREE.MeshBasicMaterial({ map: texture })}
       />
       <LightsComp
         name='meshNormalMaterial'
@@ -187,7 +116,7 @@ export default function App() {
         name='meshPhongMaterial'
         position={[1, 1, 0]}
         material={
-          new THREE.MeshPhongMaterial({ color: 'lime', flatShading: true })
+          new THREE.MeshPhongMaterial({ flatShading: true, map: texture })
         }
       />
       <LightsComp
@@ -195,28 +124,44 @@ export default function App() {
         position={[3, 1, 0]}
         material={
           new THREE.MeshStandardMaterial({
-            color: 0xff0033,
             flatShading: true,
+            map: texture,
           })
         }
       />
-      <Floor />
+      <Floor /> */}
+      <directionalLight position={[-3, 100, 100]} castShadow />
+      <primitive
+        object={gltf.scene}
+        position={[0, 1, 0]}
+        children-0-castShadow
+      />
+      {/* Target Field */}
+      {/* <primitive
+        object={gltf.scene}
+        position={[-1.5, -2.22, 0.07]}
+        children-0-castShadow
+      /> */}
+      <Circle args={[10]} rotation-x={-Math.PI / 2} receiveShadow>
+        <meshStandardMaterial />
+      </Circle>
       <OrbitControls
-      // enableDamping={false}
-      // enablePan={false}
-      // enableRotate={false}
-      // Limit the amount of rotation
-      // minAzimuthAngle={-Math.PI / 4}
-      // maxAzimuthAngle={Math.PI / 4}
-      // minPolarAngle={Math.PI / 6}
-      // maxPolarAngle={Math.PI - Math.PI / 6}
+        // enableDamping={false}
+        // enablePan={false}
+        // enableRotate={false}
+        // Limit the amount of rotation
+        // minAzimuthAngle={-Math.PI / 4}
+        // maxAzimuthAngle={Math.PI / 4}
+        // minPolarAngle={Math.PI / 6}
+        // maxPolarAngle={Math.PI - Math.PI / 6}
+        target={[0, 1, 0]}
       />
       <axesHelper args={[5]} />
-      <gridHelper
+      {/* <gridHelper
         args={[20, 20, 0xff0000, 'teal']}
         // rotation-x={Math.PI / 4} //  Target a specific axis
         rotation={[Math.PI / 4, 0, 0]} // Do X, Y, and Z all at once.
-      />
+      /> */}
 
       {/* Show Megabytes Used as default */}
       {/* <Stats showPanel={2} /> */}
@@ -349,4 +294,109 @@ export default function App() {
 //       <spotLight ref={spotRef} />
 //     </>
 //   );
+// }
+
+// Shadow Video
+// function Lights() {
+//   const ambientCtl = useControls('Ambient Light', {
+//     visible: false,
+//     intensity: {
+//       value: 1.0,
+//       min: 0,
+//       max: 1.0,
+//       step: 0.1,
+//     },
+//   });
+
+//   const directionalCtl = useControls('Directional Light', {
+//     visible: true,
+//     position: {
+//       x: 3.3,
+//       y: 1.0,
+//       z: 4.4,
+//     },
+//     castShadow: true,
+//   });
+
+//   const pointCtl = useControls('Point Light', {
+//     visible: false,
+//     position: {
+//       x: 2,
+//       y: 0,
+//       z: 0,
+//     },
+//     castShadow: true,
+//   });
+
+//   const spotCtl = useControls('Spot Light', {
+//     visible: false,
+//     position: {
+//       x: 3,
+//       y: 2.5,
+//       z: 1,
+//     },
+//     castShadow: true,
+//   });
+
+//   return (
+//     <>
+//       <ambientLight
+//         visible={ambientCtl.visible}
+//         intensity={ambientCtl.intensity}
+//       />
+//       <directionalLight
+//         visible={directionalCtl.visible}
+//         position={[
+//           directionalCtl.position.x,
+//           directionalCtl.position.y,
+//           directionalCtl.position.z,
+//         ]}
+//         castShadow={directionalCtl.castShadow}
+//       />
+//       <pointLight
+//         visible={pointCtl.visible}
+//         position={[
+//           pointCtl.position.x,
+//           pointCtl.position.y,
+//           pointCtl.position.z,
+//         ]}
+//         castShadow={pointCtl.castShadow}
+//       />
+//       <spotLight
+//         visible={spotCtl.visible}
+//         position={[spotCtl.position.x, spotCtl.position.y, spotCtl.position.z]}
+//         castShadow={spotCtl.castShadow}
+//       />
+//     </>
+//   );
+// }
+
+// useLoader Video
+// function Lights() {
+//   const directionalRef = React.useRef();
+
+//   useControls('Directional Light', {
+//     intensity: {
+//       value: 1,
+//       min: 0,
+//       max: 5,
+//       step: 0.1,
+//       onChange: (v) => {
+//         // @ts-ignore
+//         directionalRef.current.intensity = v;
+//       },
+//     },
+//     // @ts-ignore
+//     position: {
+//       x: 3.3,
+//       y: 1.0,
+//       z: 4.4,
+//       onChange: (v) => {
+//         // @ts-ignore
+//         directionalRef.current.position.copy(v);
+//       },
+//     },
+//   });
+
+//   return <directionalLight ref={directionalRef} castShadow />;
 // }
