@@ -5,19 +5,93 @@ import * as THREE from 'three';
 // import Polyhedron from './Polyhedron';
 // import { Stats } from '@react-three/drei';
 import { Perf } from 'r3f-perf';
-import { Circle, OrbitControls, Environment } from '@react-three/drei';
-import { useControls } from 'leva';
+import {
+  Circle,
+  OrbitControls,
+  Environment,
+  ContactShadows,
+} from '@react-three/drei';
+import { Leva, useControls } from 'leva';
 // import { useMemo, useRef } from 'react';
 // import Materials from './Materials';
 // import LightsComp from './Lights';
 // import Floor from './Floor';
 import { GLTFLoader } from 'three/examples/jsm/loaders/GLTFLoader';
 
+function Model() {
+  const { scene } = useLoader(GLTFLoader, './models/scene.glb');
+
+  const {
+    x,
+    y,
+    z,
+    visible,
+    color,
+    metalness,
+    roughness,
+    clearcoat,
+    clearcoatRoughness,
+    transmission,
+    ior,
+    thickness,
+  } = useControls('Suzanne', {
+    x: { value: 0, min: 0, max: Math.PI * 2, step: 0.01 },
+    y: { value: 0, min: 0, max: Math.PI * 2, step: 0.01 },
+    z: { value: 0, min: 0, max: Math.PI * 2, step: 0.01 },
+    visible: true,
+    color: { value: '#861eff' },
+    metalness: { value: 0, min: 0, max: 1.0, step: 0.01 },
+    roughness: { value: 0, min: 0, max: 1.0, step: 0.01 },
+    clearcoat: { value: 1, min: 0, max: 1.0, step: 0.01 },
+    clearcoatRoughness: { value: 0, min: 0, max: 1.0, step: 0.01 },
+    transmission: { value: 1.0, min: 0, max: 1.0, step: 0.01 },
+    ior: { value: 1.74, min: 1, max: 5, step: 0.01 },
+    thickness: { value: 3.12, min: 0, max: 5, step: 0.01 },
+  });
+
+  return (
+    <primitive
+      object={scene}
+      children-4-rotation={[x, y, z]}
+      children-4-visible={visible}
+      children-4-material-color={color}
+      children-4-material-metalness={metalness}
+      children-4-material-roughness={roughness}
+      children-4-material-clearcoat={clearcoat}
+      children-4-material-clearcoatRoughness={clearcoatRoughness}
+      children-4-material-transmission={transmission}
+      children-4-material-ior={ior}
+      children-4-material-thickness={thickness}
+    />
+  );
+}
+
+function Env() {
+  const { height, radius, scale } = useControls('Ground', {
+    height: { value: 10, min: 0, max: 100, step: 1 },
+    radius: { value: 115, min: 0, max: 1000, step: 1 },
+    scale: { value: 100, min: 0, max: 1000, step: 1 },
+  });
+  return (
+    <Environment
+      // preset="sunset"
+      files='./img/spiaggia_di_mondello_2k.exr'
+      blur={0}
+      background
+      ground={{
+        height: height,
+        radius: radius,
+        scale: scale,
+      }}
+    />
+  );
+}
+
 export default function App() {
   // const texture = useLoader(THREE.TextureLoader, './img/grid.png');
   // Target Field
   // const gltf = useLoader(GLTFLoader, './models/TargetField3Condensed.glb');
-  const gltf = useLoader(GLTFLoader, './models/monkey.glb');
+  // const gltf = useLoader(GLTFLoader, './models/scene.glb');
 
   // const polyhedron = useMemo(
   //   () => [
@@ -42,9 +116,10 @@ export default function App() {
   // const pB = useControls('Polyhedron B', options);
 
   return (
-    <Canvas camera={{ position: [4, 4, 8] }} shadows>
-      {/* <directionalLight position={[1, 1, 1]} /> */}
-      {/* <Box
+    <>
+      <Canvas camera={{ position: [-8, 5, 8] }} shadows>
+        {/* <directionalLight position={[1, 1, 1]} /> */}
+        {/* <Box
         position={new THREE.Vector3(-0.75, 0, 0)}
         name='A'
         primaryColor={0x00ff00}
@@ -58,7 +133,7 @@ export default function App() {
         secondaryColor={0x00ff00}
         wireframe={false}
       /> */}
-      {/* <Polyhedron
+        {/* <Polyhedron
         position={new THREE.Vector3(-0.75, -0.75, 0)}
         rotation={[pA.x, pA.y, pA.z]}
         visible={pA.visible}
@@ -72,7 +147,7 @@ export default function App() {
         color={pB.color}
         polyhedron={polyhedron}
       /> */}
-      {/* <Polyhedron
+        {/* <Polyhedron
         position={new THREE.Vector3(-0.75, 0.75, 0)}
         polyhedron={polyhedron}
         />
@@ -81,7 +156,7 @@ export default function App() {
         polyhedron={polyhedron}
       /> */}
 
-      {/* <Materials
+        {/* <Materials
         name='meshBasicMaterial'
         position={[-3, 1, 0]}
         material={new THREE.MeshBasicMaterial()}
@@ -101,7 +176,7 @@ export default function App() {
         position={[3, 1, 0]}
         material={new THREE.MeshStandardMaterial()}
       /> */}
-      {/* <Lights />
+        {/* <Lights />
       <LightsComp
         name='meshBasicMaterial'
         position={[-3, 1, 0]}
@@ -130,52 +205,57 @@ export default function App() {
         }
       />
       <Floor /> */}
-      <Environment
-        files='./img/spiaggia_di_mondello_2k.exr'
-        background
-        blur={0.0}
-      />
-      {/* <directionalLight position={[-3, 100, 100]} intensity={4} castShadow />
+        <Env />
+        <Model />
+        {/* <directionalLight position={[-3, 100, 100]} intensity={4} castShadow />
       <directionalLight position={[3, -100, -100]} intensity={4} castShadow /> */}
-      <directionalLight position={[3.3, 1.0, 4.4]} intensity={4} />
-      <primitive
+        {/* <directionalLight position={[3.3, 1.0, 4.4]} intensity={4} /> */}
+        {/* <primitive
         object={gltf.scene}
-        position={[0, 1, 0]}
+        // position={[0, 1, 0]}
         // children-0-castShadow
-      />
-      {/* Target Field */}
-      {/* <primitive
+      /> */}
+        {/* Target Field */}
+        {/* <primitive
         object={gltf.scene}
         position={[-1.5, -2.22, 0.07]}
         children-0-castShadow
       /> */}
-      {/* <Circle args={[10]} rotation-x={-Math.PI / 2} receiveShadow>
+        {/* <Circle args={[10]} rotation-x={-Math.PI / 2} receiveShadow>
         <meshStandardMaterial />
       </Circle> */}
-      <OrbitControls
-        // enableDamping={false}
-        // enablePan={false}
-        // enableRotate={false}
-        // Limit the amount of rotation
-        // minAzimuthAngle={-Math.PI / 4}
-        // maxAzimuthAngle={Math.PI / 4}
-        // minPolarAngle={Math.PI / 6}
-        // maxPolarAngle={Math.PI - Math.PI / 6}
-        target={[0, 1, 0]}
-        autoRotate
-      />
-      <axesHelper args={[5]} />
-      {/* <gridHelper
+        <ContactShadows
+          scale={150}
+          position={[0.33, -0.33, 0.33]}
+          opacity={1.5}
+        />
+        <OrbitControls
+          // enableDamping={false}
+          // enablePan={false}
+          // enableRotate={false}
+          // Limit the amount of rotation
+          // minAzimuthAngle={-Math.PI / 4}
+          // maxAzimuthAngle={Math.PI / 4}
+          // minPolarAngle={Math.PI / 6}
+          // maxPolarAngle={Math.PI - Math.PI / 6}
+          target={[0, 1, 0]}
+          // autoRotate
+          maxPolarAngle={Math.PI / 2}
+        />
+        <axesHelper args={[5]} />
+        {/* <gridHelper
         args={[20, 20, 0xff0000, 'teal']}
         // rotation-x={Math.PI / 4} //  Target a specific axis
         rotation={[Math.PI / 4, 0, 0]} // Do X, Y, and Z all at once.
       /> */}
 
-      {/* Show Megabytes Used as default */}
-      {/* <Stats showPanel={2} /> */}
-      {/* More advance monitoring than Stats */}
-      <Perf position='top-left' />
-    </Canvas>
+        {/* Show Megabytes Used as default */}
+        {/* <Stats showPanel={2} /> */}
+        {/* More advance monitoring than Stats */}
+        <Perf position='top-left' />
+      </Canvas>
+      <Leva collapsed />
+    </>
   );
 }
 
