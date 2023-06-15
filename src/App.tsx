@@ -5,7 +5,7 @@ import * as THREE from 'three';
 // import Polyhedron from './Polyhedron';
 // import { Stats } from '@react-three/drei';
 import { Perf } from 'r3f-perf';
-import { Circle, OrbitControls } from '@react-three/drei';
+import { Circle, OrbitControls, Environment } from '@react-three/drei';
 import { useControls } from 'leva';
 // import { useMemo, useRef } from 'react';
 // import Materials from './Materials';
@@ -130,11 +130,18 @@ export default function App() {
         }
       />
       <Floor /> */}
-      <directionalLight position={[-3, 100, 100]} castShadow />
+      <Environment
+        files='./img/spiaggia_di_mondello_2k.exr'
+        background
+        blur={0.0}
+      />
+      {/* <directionalLight position={[-3, 100, 100]} intensity={4} castShadow />
+      <directionalLight position={[3, -100, -100]} intensity={4} castShadow /> */}
+      <directionalLight position={[3.3, 1.0, 4.4]} intensity={4} />
       <primitive
         object={gltf.scene}
         position={[0, 1, 0]}
-        children-0-castShadow
+        // children-0-castShadow
       />
       {/* Target Field */}
       {/* <primitive
@@ -142,9 +149,9 @@ export default function App() {
         position={[-1.5, -2.22, 0.07]}
         children-0-castShadow
       /> */}
-      <Circle args={[10]} rotation-x={-Math.PI / 2} receiveShadow>
+      {/* <Circle args={[10]} rotation-x={-Math.PI / 2} receiveShadow>
         <meshStandardMaterial />
-      </Circle>
+      </Circle> */}
       <OrbitControls
         // enableDamping={false}
         // enablePan={false}
@@ -155,6 +162,7 @@ export default function App() {
         // minPolarAngle={Math.PI / 6}
         // maxPolarAngle={Math.PI - Math.PI / 6}
         target={[0, 1, 0]}
+        autoRotate
       />
       <axesHelper args={[5]} />
       {/* <gridHelper
