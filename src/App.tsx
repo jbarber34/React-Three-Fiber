@@ -1,93 +1,47 @@
 import { Canvas, useLoader } from '@react-three/fiber';
 // import Box from './Box';
 import * as React from 'react';
-import * as THREE from 'three';
+// import * as THREE from 'three';
 // import Polyhedron from './Polyhedron';
 // import { Stats } from '@react-three/drei';
 import { Perf } from 'r3f-perf';
 import {
-  Circle,
+  // Circle,
   OrbitControls,
   Environment,
-  ContactShadows,
+  // ContactShadows,
+  useGLTF,
+  Clone,
 } from '@react-three/drei';
 import { Leva, useControls } from 'leva';
 // import { useMemo, useRef } from 'react';
 // import Materials from './Materials';
 // import LightsComp from './Lights';
 // import Floor from './Floor';
-import { GLTFLoader } from 'three/examples/jsm/loaders/GLTFLoader';
+// import { GLTFLoader } from 'three/examples/jsm/loaders/GLTFLoader';
+import { Suspense } from 'react';
 
-function Model() {
-  const { scene } = useLoader(GLTFLoader, './models/scene.glb');
-
-  const {
-    x,
-    y,
-    z,
-    visible,
-    color,
-    metalness,
-    roughness,
-    clearcoat,
-    clearcoatRoughness,
-    transmission,
-    ior,
-    thickness,
-  } = useControls('Suzanne', {
-    x: { value: 0, min: 0, max: Math.PI * 2, step: 0.01 },
-    y: { value: 0, min: 0, max: Math.PI * 2, step: 0.01 },
-    z: { value: 0, min: 0, max: Math.PI * 2, step: 0.01 },
-    visible: true,
-    color: { value: '#861eff' },
-    metalness: { value: 0, min: 0, max: 1.0, step: 0.01 },
-    roughness: { value: 0, min: 0, max: 1.0, step: 0.01 },
-    clearcoat: { value: 1, min: 0, max: 1.0, step: 0.01 },
-    clearcoatRoughness: { value: 0, min: 0, max: 1.0, step: 0.01 },
-    transmission: { value: 1.0, min: 0, max: 1.0, step: 0.01 },
-    ior: { value: 1.74, min: 1, max: 5, step: 0.01 },
-    thickness: { value: 3.12, min: 0, max: 5, step: 0.01 },
-  });
-
-  return (
-    <primitive
-      object={scene}
-      children-4-rotation={[x, y, z]}
-      children-4-visible={visible}
-      children-4-material-color={color}
-      children-4-material-metalness={metalness}
-      children-4-material-roughness={roughness}
-      children-4-material-clearcoat={clearcoat}
-      children-4-material-clearcoatRoughness={clearcoatRoughness}
-      children-4-material-transmission={transmission}
-      children-4-material-ior={ior}
-      children-4-material-thickness={thickness}
-    />
-  );
+interface Props {
+  url: string;
 }
 
-function Env() {
-  const { height, radius, scale } = useControls('Ground', {
-    height: { value: 10, min: 0, max: 100, step: 1 },
-    radius: { value: 115, min: 0, max: 1000, step: 1 },
-    scale: { value: 100, min: 0, max: 1000, step: 1 },
-  });
-  return (
-    <Environment
-      // preset="sunset"
-      files='./img/spiaggia_di_mondello_2k.exr'
-      blur={0}
-      background
-      ground={{
-        height: height,
-        radius: radius,
-        scale: scale,
-      }}
-    />
-  );
+const Models = [
+  { title: 'Hammer', url: './models/hammer.glb' },
+  { title: 'Drill', url: './models/drill.glb' },
+  { title: 'Tape Measure', url: './models/tapeMeasure.glb' },
+];
+
+function Model({ url }: Props) {
+  const { scene } = useGLTF(url);
+  return <Clone object={scene} />;
 }
 
 export default function App() {
+  const { title } = useControls({
+    title: {
+      options: Models.map(({ title }) => title),
+    },
+  });
   // const texture = useLoader(THREE.TextureLoader, './img/grid.png');
   // Target Field
   // const gltf = useLoader(GLTFLoader, './models/TargetField3Condensed.glb');
@@ -117,7 +71,7 @@ export default function App() {
 
   return (
     <>
-      <Canvas camera={{ position: [-8, 5, 8] }} shadows>
+      <Canvas camera={{ position: [0, 0, -0.2], near: 0.025 }} shadows>
         {/* <directionalLight position={[1, 1, 1]} /> */}
         {/* <Box
         position={new THREE.Vector3(-0.75, 0, 0)}
@@ -205,8 +159,8 @@ export default function App() {
         }
       />
       <Floor /> */}
-        <Env />
-        <Model />
+        {/* <Env />
+        <Model /> */}
         {/* <directionalLight position={[-3, 100, 100]} intensity={4} castShadow />
       <directionalLight position={[3, -100, -100]} intensity={4} castShadow /> */}
         {/* <directionalLight position={[3.3, 1.0, 4.4]} intensity={4} /> */}
@@ -224,11 +178,15 @@ export default function App() {
         {/* <Circle args={[10]} rotation-x={-Math.PI / 2} receiveShadow>
         <meshStandardMaterial />
       </Circle> */}
-        <ContactShadows
+        <Environment files='./img/workshop_2k.exr' background />
+        <Suspense>
+          <Model url={Models[Models.findIndex((m) => m.title === title)].url} />
+        </Suspense>
+        {/* <ContactShadows
           scale={150}
           position={[0.33, -0.33, 0.33]}
           opacity={1.5}
-        />
+        /> */}
         <OrbitControls
           // enableDamping={false}
           // enablePan={false}
@@ -238,9 +196,9 @@ export default function App() {
           // maxAzimuthAngle={Math.PI / 4}
           // minPolarAngle={Math.PI / 6}
           // maxPolarAngle={Math.PI - Math.PI / 6}
-          target={[0, 1, 0]}
-          // autoRotate
-          maxPolarAngle={Math.PI / 2}
+          // target={[0, 1, 0]}
+          autoRotate
+          // maxPolarAngle={Math.PI / 2}
         />
         <axesHelper args={[5]} />
         {/* <gridHelper
@@ -254,7 +212,9 @@ export default function App() {
         {/* More advance monitoring than Stats */}
         <Perf position='top-left' />
       </Canvas>
-      <Leva collapsed />
+      <span id='info'>The {title} is selected.</span>
+
+      {/* <Leva collapsed /> */}
     </>
   );
 }
@@ -487,4 +447,74 @@ export default function App() {
 //   });
 
 //   return <directionalLight ref={directionalRef} castShadow />;
+// }
+
+// Advanced GLTF Example
+// function Model() {
+//   const { scene } = useLoader(GLTFLoader, './models/scene.glb');
+
+//   const {
+//     x,
+//     y,
+//     z,
+//     visible,
+//     color,
+//     metalness,
+//     roughness,
+//     clearcoat,
+//     clearcoatRoughness,
+//     transmission,
+//     ior,
+//     thickness,
+//   } = useControls('Suzanne', {
+//     x: { value: 0, min: 0, max: Math.PI * 2, step: 0.01 },
+//     y: { value: 0, min: 0, max: Math.PI * 2, step: 0.01 },
+//     z: { value: 0, min: 0, max: Math.PI * 2, step: 0.01 },
+//     visible: true,
+//     color: { value: '#861eff' },
+//     metalness: { value: 0, min: 0, max: 1.0, step: 0.01 },
+//     roughness: { value: 0, min: 0, max: 1.0, step: 0.01 },
+//     clearcoat: { value: 1, min: 0, max: 1.0, step: 0.01 },
+//     clearcoatRoughness: { value: 0, min: 0, max: 1.0, step: 0.01 },
+//     transmission: { value: 1.0, min: 0, max: 1.0, step: 0.01 },
+//     ior: { value: 1.74, min: 1, max: 5, step: 0.01 },
+//     thickness: { value: 3.12, min: 0, max: 5, step: 0.01 },
+//   });
+
+//   return (
+//     <primitive
+//       object={scene}
+//       children-4-rotation={[x, y, z]}
+//       children-4-visible={visible}
+//       children-4-material-color={color}
+//       children-4-material-metalness={metalness}
+//       children-4-material-roughness={roughness}
+//       children-4-material-clearcoat={clearcoat}
+//       children-4-material-clearcoatRoughness={clearcoatRoughness}
+//       children-4-material-transmission={transmission}
+//       children-4-material-ior={ior}
+//       children-4-material-thickness={thickness}
+//     />
+//   );
+// }
+
+// function Env() {
+//   const { height, radius, scale } = useControls('Ground', {
+//     height: { value: 10, min: 0, max: 100, step: 1 },
+//     radius: { value: 115, min: 0, max: 1000, step: 1 },
+//     scale: { value: 100, min: 0, max: 1000, step: 1 },
+//   });
+//   return (
+//     <Environment
+//       // preset="sunset"
+//       files='./img/spiaggia_di_mondello_2k.exr'
+//       blur={0}
+//       background
+//       ground={{
+//         height: height,
+//         radius: radius,
+//         scale: scale,
+//       }}
+//     />
+//   );
 // }
