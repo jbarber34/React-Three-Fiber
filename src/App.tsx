@@ -12,6 +12,7 @@ import {
   // ContactShadows,
   useGLTF,
   Clone,
+  Html,
 } from '@react-three/drei';
 import { Leva, useControls } from 'leva';
 // import { useMemo, useRef } from 'react';
@@ -19,27 +20,62 @@ import { Leva, useControls } from 'leva';
 // import LightsComp from './Lights';
 // import Floor from './Floor';
 // import { GLTFLoader } from 'three/examples/jsm/loaders/GLTFLoader';
-import { Suspense } from 'react';
+import { Suspense, useState } from 'react';
+// @ts-ignore
+import Models from './models';
 
 interface Props {
   url: string;
 }
 
-const Models = [
-  { title: 'Hammer', url: './models/hammer.glb' },
-  { title: 'Drill', url: './models/drill.glb' },
-  { title: 'Tape Measure', url: './models/tapeMeasure.glb' },
-];
+// function Model({ url }: Props) {
+//   const { scene } = useGLTF(url);
+//   return <Clone object={scene} />;
+// }
 
 function Model({ url }: Props) {
   const { scene } = useGLTF(url);
-  return <Clone object={scene} />;
+  const [cache, setCache] = useState<any>({});
+
+  if (!cache[url]) {
+    const annotations: any = [];
+
+    scene.traverse((o) => {
+      if (o.userData.prop) {
+        annotations.push(
+          <Html
+            key={o.uuid}
+            position={[o.position.x, o.position.y, o.position.z]}
+            distanceFactor={0.25}
+            // occlude
+            // transform
+          >
+            <div className='annotation'>{o.userData.prop}</div>
+          </Html>
+        );
+      }
+    });
+
+    console.log('Caching JSX for url ' + url);
+    setCache({
+      ...cache,
+      [url]: <primitive object={scene}>{annotations}</primitive>,
+    });
+  }
+  // @ts-ignore
+  return cache[url];
 }
 
 export default function App() {
-  const { title } = useControls({
-    title: {
-      options: Models.map(({ title }) => title),
+  // const { title } = useControls({
+  //   title: {
+  //     options: Models.map(({ title }) => title),
+  //   },
+  // });
+  const { model } = useControls({
+    model: {
+      value: 'hammer',
+      options: Object.keys(Models),
     },
   });
   // const texture = useLoader(THREE.TextureLoader, './img/grid.png');
@@ -179,9 +215,12 @@ export default function App() {
         <meshStandardMaterial />
       </Circle> */}
         <Environment files='./img/workshop_2k.exr' background />
-        <Suspense>
+        {/* <Suspense>
           <Model url={Models[Models.findIndex((m) => m.title === title)].url} />
-        </Suspense>
+        </Suspense> */}
+        <group>
+          <Model url={Models[model]} />
+        </group>
         {/* <ContactShadows
           scale={150}
           position={[0.33, -0.33, 0.33]}
@@ -212,8 +251,10 @@ export default function App() {
         {/* More advance monitoring than Stats */}
         <Perf position='top-left' />
       </Canvas>
-      <span id='info'>The {title} is selected.</span>
-
+      {/* <span id='info'>The {title} is selected.</span> */}
+      <span id='info'>
+        The {model.replace(/([A-Z])/g, ' $1').toLowerCase()} is selected.
+      </span>
       {/* <Leva collapsed /> */}
     </>
   );
