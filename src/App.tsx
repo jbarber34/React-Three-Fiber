@@ -7,17 +7,19 @@ import * as React from 'react';
 import { Perf } from 'r3f-perf';
 import {
   // Circle,
-  // OrbitControls,
-  Environment,
+  OrbitControls,
+  // Environment,
   // ContactShadows,
   // useGLTF,
   // Clone,
   // Html,
-  // ContactShadows,
-  Center,
+  ContactShadows,
+  // Center,
 } from '@react-three/drei';
-import Button from './Button';
-import { Vector3 } from 'three';
+import MoveBox from './MoveBox';
+import useKeyboard from './useKeyboard';
+// import Button from './Button';
+// import { Vector3 } from 'three';
 
 // import { Leva, useControls } from 'leva';
 // import { useMemo, useRef } from 'react';
@@ -73,15 +75,15 @@ import { Vector3 } from 'three';
 //   return cache[url];
 // }
 
-const vec = new Vector3();
+// const vec = new Vector3();
 
-function Rig() {
-  return useFrame(({ camera, mouse }) => {
-    vec.set(mouse.x * 2, mouse.y * 2, camera.position.z);
-    camera.position.lerp(vec, 0.025);
-    camera.lookAt(0, 0, 0);
-  });
-}
+// function Rig() {
+//   return useFrame(({ camera, mouse }) => {
+//     vec.set(mouse.x * 2, mouse.y * 2, camera.position.z);
+//     camera.position.lerp(vec, 0.025);
+//     camera.lookAt(0, 0, 0);
+//   });
+// }
 
 export default function App() {
   // const { title } = useControls({
@@ -124,9 +126,11 @@ export default function App() {
   // const pA = useControls('Polyhedron A', options);
   // const pB = useControls('Polyhedron B', options);
 
+  const keyMap = useKeyboard();
+
   return (
     <>
-      <Canvas camera={{ position: [0, 0, 5] }}>
+      <Canvas camera={{ position: [1, 2, 3] }}>
         {' '}
         {/* }, near: 0.025 }} shadows>*/}
         {/* <directionalLight position={[1, 1, 1]} /> */}
@@ -235,7 +239,7 @@ export default function App() {
         <meshStandardMaterial />
       </Circle> */}
         {/* <Environment files='./img/spiaggia_di_mondello_2k.exr' background /> */}
-        <Environment preset='forest' background />
+        {/* <Environment preset='forest' background />
         <Center>
           {[...Array(5).keys()].map((x) =>
             [...Array(3).keys()].map((y) => (
@@ -243,7 +247,10 @@ export default function App() {
             ))
           )}
         </Center>
-        <Rig />
+        <Rig /> */}
+        <MoveBox position={[-1.5, 0.5, 0]} keyMapInput={keyMap} />
+        <MoveBox position={[0, 0.5, 0]} keyMapInput={keyMap} boxSelected />
+        <MoveBox position={[1.5, 0.5, 0]} keyMapInput={keyMap} />
         {/* <Suspense>
           <Model url={Models[Models.findIndex((m) => m.title === title)].url} />
         </Suspense> */}
@@ -252,31 +259,32 @@ export default function App() {
           <Model url={Models[model]} />
         </group> */}
         {/* <Model /> */}
-        {/* <ContactShadows
+        <ContactShadows
           // scale={150}
           position={[0, -0.8, 0]}
           // opacity={1.5}
           color={'#ffffff'}
         />
         <OrbitControls
-          // enableDamping={false}
-          // enablePan={false}
-          // enableRotate={false}
-          // Limit the amount of rotation
-          // minAzimuthAngle={-Math.PI / 4}
-          // maxAzimuthAngle={Math.PI / 4}
-          // minPolarAngle={Math.PI / 6}
-          // maxPolarAngle={Math.PI - Math.PI / 6}
-          // target={[0, 1, 0]}
-          autoRotate
-          // maxPolarAngle={Math.PI / 2}
+        // enableDamping={false}
+        // enablePan={false}
+        // enableRotate={false}
+        // Limit the amount of rotation
+        // minAzimuthAngle={-Math.PI / 4}
+        // maxAzimuthAngle={Math.PI / 4}
+        // minPolarAngle={Math.PI / 6}
+        // maxPolarAngle={Math.PI - Math.PI / 6}
+        // target={[0, 1, 0]}
+        // autoRotate
+        // maxPolarAngle={Math.PI / 2}
         />
-        <axesHelper args={[5]} /> */}
+        <axesHelper args={[5]} />
         {/* <gridHelper
         args={[20, 20, 0xff0000, 'teal']}
         // rotation-x={Math.PI / 4} //  Target a specific axis
         rotation={[Math.PI / 4, 0, 0]} // Do X, Y, and Z all at once.
       /> */}
+        <gridHelper />
         {/* Show Megabytes Used as default */}
         {/* <Stats showPanel={2} /> */}
         {/* More advance monitoring than Stats */}
