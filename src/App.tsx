@@ -13,58 +13,61 @@ import {
   useGLTF,
   Clone,
   Html,
+  ContactShadows,
 } from '@react-three/drei';
-import { Leva, useControls } from 'leva';
+// import { Leva, useControls } from 'leva';
 // import { useMemo, useRef } from 'react';
 // import Materials from './Materials';
 // import LightsComp from './Lights';
 // import Floor from './Floor';
 // import { GLTFLoader } from 'three/examples/jsm/loaders/GLTFLoader';
-import { Suspense, useState } from 'react';
+// import { Suspense, useState } from 'react';
+import { Model } from './Shoe';
 // @ts-ignore
-import Models from './models';
+// import Models from './models';
 
-interface Props {
-  url: string;
-}
+// interface Props {
+//   url: string;
+// }
 
 // function Model({ url }: Props) {
 //   const { scene } = useGLTF(url);
 //   return <Clone object={scene} />;
 // }
 
-function Model({ url }: Props) {
-  const { scene } = useGLTF(url);
-  const [cache, setCache] = useState<any>({});
+// Annotations
+// function Model({ url }: Props) {
+//   const { scene } = useGLTF(url);
+//   const [cache, setCache] = useState<any>({});
 
-  if (!cache[url]) {
-    const annotations: any = [];
+//   if (!cache[url]) {
+//     const annotations: any = [];
 
-    scene.traverse((o) => {
-      if (o.userData.prop) {
-        annotations.push(
-          <Html
-            key={o.uuid}
-            position={[o.position.x, o.position.y, o.position.z]}
-            distanceFactor={0.25}
-            // occlude
-            // transform
-          >
-            <div className='annotation'>{o.userData.prop}</div>
-          </Html>
-        );
-      }
-    });
+//     scene.traverse((o) => {
+//       if (o.userData.prop) {
+//         annotations.push(
+//           <Html
+//             key={o.uuid}
+//             position={[o.position.x, o.position.y, o.position.z]}
+//             distanceFactor={0.25}
+//             // occlude
+//             // transform
+//           >
+//             <div className='annotation'>{o.userData.prop}</div>
+//           </Html>
+//         );
+//       }
+//     });
 
-    console.log('Caching JSX for url ' + url);
-    setCache({
-      ...cache,
-      [url]: <primitive object={scene}>{annotations}</primitive>,
-    });
-  }
-  // @ts-ignore
-  return cache[url];
-}
+//     console.log('Caching JSX for url ' + url);
+//     setCache({
+//       ...cache,
+//       [url]: <primitive object={scene}>{annotations}</primitive>,
+//     });
+//   }
+//   // @ts-ignore
+//   return cache[url];
+// }
 
 export default function App() {
   // const { title } = useControls({
@@ -72,12 +75,14 @@ export default function App() {
   //     options: Models.map(({ title }) => title),
   //   },
   // });
-  const { model } = useControls({
-    model: {
-      value: 'hammer',
-      options: Object.keys(Models),
-    },
-  });
+  // Annotations
+  // const { model } = useControls({
+  //   model: {
+  //     value: 'hammer',
+  //     options: Object.keys(Models),
+  //   },
+  // });
+  // End Annotations
   // const texture = useLoader(THREE.TextureLoader, './img/grid.png');
   // Target Field
   // const gltf = useLoader(GLTFLoader, './models/TargetField3Condensed.glb');
@@ -107,7 +112,7 @@ export default function App() {
 
   return (
     <>
-      <Canvas camera={{ position: [0, 0, -0.2], near: 0.025 }} shadows>
+      <Canvas camera={{ position: [0, 0, 1.66], near: 0.025 }} shadows>
         {/* <directionalLight position={[1, 1, 1]} /> */}
         {/* <Box
         position={new THREE.Vector3(-0.75, 0, 0)}
@@ -214,18 +219,23 @@ export default function App() {
         {/* <Circle args={[10]} rotation-x={-Math.PI / 2} receiveShadow>
         <meshStandardMaterial />
       </Circle> */}
-        <Environment files='./img/workshop_2k.exr' background />
+        {/* <Environment files='./img/spiaggia_di_mondello_2k.exr' background /> */}
+        <Environment preset='forest' />
+
         {/* <Suspense>
           <Model url={Models[Models.findIndex((m) => m.title === title)].url} />
         </Suspense> */}
+        {/* Annotations
         <group>
           <Model url={Models[model]} />
-        </group>
-        {/* <ContactShadows
-          scale={150}
-          position={[0.33, -0.33, 0.33]}
-          opacity={1.5}
-        /> */}
+        </group> */}
+        <Model />
+        <ContactShadows
+          // scale={150}
+          position={[0, -0.08, 0]}
+          // opacity={1.5}
+          color={'#ffffff'}
+        />
         <OrbitControls
           // enableDamping={false}
           // enablePan={false}
@@ -252,9 +262,10 @@ export default function App() {
         <Perf position='top-left' />
       </Canvas>
       {/* <span id='info'>The {title} is selected.</span> */}
-      <span id='info'>
+      {/* Annotations
+         <span id='info'>
         The {model.replace(/([A-Z])/g, ' $1').toLowerCase()} is selected.
-      </span>
+      </span> */}
       {/* <Leva collapsed /> */}
     </>
   );
