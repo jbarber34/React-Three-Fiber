@@ -1,4 +1,4 @@
-import { Canvas, useLoader } from '@react-three/fiber';
+import { Canvas, useFrame, useLoader } from '@react-three/fiber';
 // import Box from './Box';
 import * as React from 'react';
 // import * as THREE from 'three';
@@ -7,14 +7,18 @@ import * as React from 'react';
 import { Perf } from 'r3f-perf';
 import {
   // Circle,
-  OrbitControls,
+  // OrbitControls,
   Environment,
   // ContactShadows,
-  useGLTF,
-  Clone,
-  Html,
-  ContactShadows,
+  // useGLTF,
+  // Clone,
+  // Html,
+  // ContactShadows,
+  Center,
 } from '@react-three/drei';
+import Button from './Button';
+import { Vector3 } from 'three';
+
 // import { Leva, useControls } from 'leva';
 // import { useMemo, useRef } from 'react';
 // import Materials from './Materials';
@@ -22,7 +26,7 @@ import {
 // import Floor from './Floor';
 // import { GLTFLoader } from 'three/examples/jsm/loaders/GLTFLoader';
 // import { Suspense, useState } from 'react';
-import { Model } from './Shoe';
+// import { Model } from './Shoe';
 // @ts-ignore
 // import Models from './models';
 
@@ -69,6 +73,16 @@ import { Model } from './Shoe';
 //   return cache[url];
 // }
 
+const vec = new Vector3();
+
+function Rig() {
+  return useFrame(({ camera, mouse }) => {
+    vec.set(mouse.x * 2, mouse.y * 2, camera.position.z);
+    camera.position.lerp(vec, 0.025);
+    camera.lookAt(0, 0, 0);
+  });
+}
+
 export default function App() {
   // const { title } = useControls({
   //   title: {
@@ -112,7 +126,9 @@ export default function App() {
 
   return (
     <>
-      <Canvas camera={{ position: [0, 0, 1.66], near: 0.025 }} shadows>
+      <Canvas camera={{ position: [0, 0, 5] }}>
+        {' '}
+        {/* }, near: 0.025 }} shadows>*/}
         {/* <directionalLight position={[1, 1, 1]} /> */}
         {/* <Box
         position={new THREE.Vector3(-0.75, 0, 0)}
@@ -150,7 +166,6 @@ export default function App() {
         position={new THREE.Vector3(0.75, 0.75, 0)}
         polyhedron={polyhedron}
       /> */}
-
         {/* <Materials
         name='meshBasicMaterial'
         position={[-3, 1, 0]}
@@ -220,8 +235,15 @@ export default function App() {
         <meshStandardMaterial />
       </Circle> */}
         {/* <Environment files='./img/spiaggia_di_mondello_2k.exr' background /> */}
-        <Environment preset='forest' />
-
+        <Environment preset='forest' background />
+        <Center>
+          {[...Array(5).keys()].map((x) =>
+            [...Array(3).keys()].map((y) => (
+              <Button key={x + y * 5} position={[x * 2.5, y * 2.5, 0]} />
+            ))
+          )}
+        </Center>
+        <Rig />
         {/* <Suspense>
           <Model url={Models[Models.findIndex((m) => m.title === title)].url} />
         </Suspense> */}
@@ -229,10 +251,10 @@ export default function App() {
         <group>
           <Model url={Models[model]} />
         </group> */}
-        <Model />
-        <ContactShadows
+        {/* <Model /> */}
+        {/* <ContactShadows
           // scale={150}
-          position={[0, -0.08, 0]}
+          position={[0, -0.8, 0]}
           // opacity={1.5}
           color={'#ffffff'}
         />
@@ -249,13 +271,12 @@ export default function App() {
           autoRotate
           // maxPolarAngle={Math.PI / 2}
         />
-        <axesHelper args={[5]} />
+        <axesHelper args={[5]} /> */}
         {/* <gridHelper
         args={[20, 20, 0xff0000, 'teal']}
         // rotation-x={Math.PI / 4} //  Target a specific axis
         rotation={[Math.PI / 4, 0, 0]} // Do X, Y, and Z all at once.
       /> */}
-
         {/* Show Megabytes Used as default */}
         {/* <Stats showPanel={2} /> */}
         {/* More advance monitoring than Stats */}
